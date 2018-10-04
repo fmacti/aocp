@@ -46,7 +46,13 @@ public class ClienteServlet extends HttpServlet {
         	request.setAttribute("lista",dao.getListaFone(request.getParameter("txt")));
         	RequestDispatcher rd = request.getRequestDispatcher("/index.jsp");
         	rd.forward(request, response);
-        } 
+        }
+        else if (acao.equals("jaCadastrado")) {
+        	ClienteDao cDao = new ClienteDao();
+        	String vl = cDao.getCastrado(request.getParameter("valor"));
+        	response.setContentType("text/plain");
+        	response.getWriter().write(vl);
+        }
     }
 	
 	private static void salvaContatoEndereco(HttpServletRequest request, int clienteId) {

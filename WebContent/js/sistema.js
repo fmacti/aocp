@@ -6,7 +6,9 @@ $(function() {
     	        dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
     	        dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
     	        monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
-    	        monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
+    	        monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+    	        changeMonth: true,
+    	        changeYear: true
     			});
 });
 
@@ -98,3 +100,62 @@ $('#listaEnderecos').on("click", ".remove_campo_endereco", function (e) {
     $('#listaEnderecos tr.' + tr).remove();
     ex--;
 });
+
+function existeCadastro(valor, id) {
+    $.ajax({
+        type: "GET",
+        url: "sistema?op=jaCadastrado",
+        data: {
+            valor: valor
+        },
+        success : function(txt) {
+        	console.log(txt)
+        	if(txt != ""){
+        		$("#" + id).attr("data-toggle", "popover");
+                $("#" + id).attr("data-placement", "bottom");
+                $("#" + id).attr("data-content", txt);
+                $("#" + id).popover('show');
+                $("#" + id).val("");
+        	}else{
+        		$("#" + id).attr("data-toggle", "popover");
+                $("#" + id).popover('hide');
+        	}        	
+        }
+    });
+}
+
+function idade(nascimento) {
+	var hoje = new Date();
+    var diferencaAnos = hoje.getFullYear() - nascimento.getFullYear();
+    if ( new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate()) < 
+         new Date(hoje.getFullYear(), nascimento.getMonth(), nascimento.getDate()) )
+        diferencaAnos--;
+    return diferencaAnos;
+}
+
+function validaDate(vl) {
+	if (vl!="")
+	{
+	        erro=0;
+	        hoje = new Date();
+	        anoAtual = hoje.getFullYear();
+	        barras = vl.split("/");
+	        if (barras.length == 3)
+	        {
+	                dia = barras[0];
+	                mes = barras[1];
+	                ano = barras[2];
+	                resultado = (!isNaN(dia) && (dia > 0) && (dia < 32)) && (!isNaN(mes) && (mes > 0) && (mes < 13)) && (!isNaN(ano) && (ano.length == 4) && (ano <= anoAtual && ano >= 1900));
+	                if (!resultado)
+	                {	                        
+	                    return false;
+	                }
+	         }
+	         else
+	         {	                
+	            return false;
+	         }
+	return true;
+	}
+	return false;
+}

@@ -72,15 +72,16 @@ public class ClienteDao {
 		
         try {
             List<ClienteView> clientes = new ArrayList<ClienteView>();
-            String sql = "select c.*, (select co.fixo from contato co where co.cliente_id = c.id limit 1) AS fixo, " + 
-       			 "(select co.celular from contato co where co.cliente_id = c.id limit 1) AS celular " + 
+            String sql = "select c.* " + 
        			 "from cliente c";
             pstm = this.conn.prepareStatement(sql);
             rs = pstm.executeQuery();
-
+            EnderecoDao endDao = new EnderecoDao();
+            ContatoDao cDao = new ContatoDao();
             while (rs.next()) {
             	ClienteView cli = new ClienteView(rs.getInt("id"), rs.getString("nome"), rs.getString("cpf_cnpj"), rs.getDate("data_nasc")); 
-            	cli.addContatos(rs.getString("fixo"), rs.getString("celular"));
+            	cli.addContatos(cDao.getLista(cli.getId()));
+            	cli.addEnderecos(endDao.getLista(cli.getId()));
             	clientes.add(cli);
             }            
             return clientes;
@@ -109,21 +110,56 @@ public class ClienteDao {
 		
         try {
             List<ClienteView> clientes = new ArrayList<ClienteView>();
-            String sql = "select c.*, (select co.fixo from contato co where co.cliente_id = c.id limit 1) AS fixo, " + 
-            			 "(select co.celular from contato co where co.cliente_id = c.id limit 1) AS celular " + 
+            String sql = "select c.* " + 
             			 "from cliente c where c.id in (select cliente_id from contato where fixo like ? OR celular like ?)";
             
             pstm = this.conn.prepareStatement(sql);
             pstm.setString(1, '%' + txt + '%');
             pstm.setString(2, '%' + txt + '%');
             rs = pstm.executeQuery();
-
+            
+            EnderecoDao endDao = new EnderecoDao();
+            ContatoDao cDao = new ContatoDao();
             while (rs.next()) {
                 ClienteView cli = new ClienteView(rs.getInt("id"), rs.getString("nome"), rs.getString("cpf_cnpj"), rs.getDate("data_nasc"));
-                cli.addContatos(rs.getString("fixo"), rs.getString("celular"));
+                cli.addContatos(cDao.getLista(cli.getId()));
+                cli.addEnderecos(endDao.getLista(cli.getId()));
                 clientes.add(cli);
             }            
             return clientes;
+            
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }finally{
+			 
+			 try{
+				 if(rs != null){		 
+					 rs.close();
+				 }
+				 if(pstm != null){		 
+					 pstm.close();
+				 }
+			 }
+			 catch(Exception e){		 
+				 e.printStackTrace();
+			 }
+		 }
+    }
+	
+	public String getCastrado(String valor) {
+		PreparedStatement pstm = null;
+		ResultSet rs = null;
+		
+        try {
+            String sql = "select c.nome, c.cpf_cnpj from cliente c WHERE c.cpf_cnpj = ?";
+            pstm = this.conn.prepareStatement(sql);
+            pstm.setString(1, valor);
+            rs = pstm.executeQuery();
+
+            while (rs.next()) {
+            	return "Cliente " + rs.getString("nome") +" já está cadastrado com o CPF/CNPJ "+ rs.getString("cpf_cnpj");             	
+            }            
+            return "";
             
         } catch (SQLException e) {
             throw new RuntimeException(e);

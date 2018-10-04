@@ -27,11 +27,16 @@ public class ClienteView {
 			
 	public ClienteView() {}
 	
-	public void addContatos(String fixo, String celular) {
-		if(fixo != null && celular != null) {
-			Contato c = new Contato(fixo, celular, this.id);
-			contatos.add(c);
+	public void addContatos(List<Contato> conts) {
+		if(!conts.isEmpty()) {
+			contatos.addAll(conts);
 		}
+	}
+	
+	public void addEnderecos(List<Endereco> ends) {
+		if(!ends.isEmpty()) {
+			enderecos.addAll(ends);
+		}		
 	}
 			
 	public int getId() {
