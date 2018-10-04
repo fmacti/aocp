@@ -23,8 +23,12 @@ public class ClienteServlet extends HttpServlet {
         ClienteDao dao = new ClienteDao();
 
         if (acao.equals("adiciona")) {
+        	
         	Cliente cli = new Cliente(request.getParameter("nome"), request.getParameter("cpfCnpj"), request.getParameter("dataNasc"));
-            dao.salvar(cli);            
+            int clienteId = dao.salvar(cli);
+            
+            salvaContatoEndereco(request, clienteId);
+            
             request.setAttribute("lista", dao.getLista());
             RequestDispatcher rd = request.getRequestDispatcher("/index.jsp");
             rd.forward(request, response);
@@ -40,4 +44,13 @@ public class ClienteServlet extends HttpServlet {
         	rd.forward(request, response);
         } 
     }
+	
+	private static void salvaContatoEndereco(HttpServletRequest request, int clienteId) {
+		String[] fixos = request.getParameterValues("Fixo");
+    	String[] celulares = request.getParameterValues("Celular");
+    	String[] logradouro = request.getParameterValues("Logradouro");
+    	String[] cidade = request.getParameterValues("Cidade");
+    	String[] uf = request.getParameterValues("Uf");
+    	//terminar criar as entidade de contato e endereço para tratar essas valores.
+	}
 }

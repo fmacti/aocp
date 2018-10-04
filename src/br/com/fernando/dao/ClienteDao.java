@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class ClienteDao {
         this.conn = new Conexao().getConnection();
     }
 	
-	public void salvar(Cliente cliente){		 
+	public int salvar(Cliente cliente){		 
 				 
 		 String sql = "INSERT INTO cliente(nome,cpf_cnpj,data_nasc)" +
 		 " VALUES(?,?,?)";
@@ -27,13 +28,20 @@ public class ClienteDao {
 		 
 		 try {		 		 
 			 //Cria um PreparedStatment, classe usada para executar a query
-			 pstm = conn.prepareStatement(sql);
+			 pstm = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			 
 			 pstm.setString(1, cliente.getNome());
 			 pstm.setString(2, cliente.getCpfCnpj());
 			 pstm.setDate(3, new java.sql.Date(cliente.getDataNasc().getTime()));
 			 
 			 pstm.execute();
+			 
+			 int ultimoId = 0;
+			 ResultSet rs = pstm.getGeneratedKeys();
+			 if (rs.next()) {
+				 ultimoId = rs.getInt(1);
+			 }			 
+			 return ultimoId;
 		 
 		 } catch (Exception e) {		 
 			 e.printStackTrace();
@@ -54,6 +62,7 @@ public class ClienteDao {
 				 e.printStackTrace();
 			 }
 		 }
+		return 0;
 	}
 	
 	public List<Cliente> getLista() {
