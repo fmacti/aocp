@@ -63,8 +63,8 @@
 	    		<c:if test="${not empty lista}">
 	    		   <form action="sistema?op=listaFiltro" method="post" class="form-inline">
 	    		    <div class="form-group">
-					    <label for="pesNome">Nome</label>
-					    <input type="text" class="form-control" id="pesNome" name="txt" placeholder="Pesquisar por nome" autocomplete = "off">					    
+					    <label for="pesNome">DDD</label>
+					    <input type="text" class="form-control ddd" id="pesNome" name="txt" placeholder="Pesquisar por DDD" autocomplete = "off" maxlength="2">					    
 					 </div>
 	        		 <input class="btn btn-info" type="submit" value="pesquisar" />
 	        		</form>
@@ -76,6 +76,11 @@
 		                <td>${cli.getNome()}</td> 
 		                <td>${cli.getCpfCnpj()}</td>
 		                <td>${cli.getDataNascFormatada()}</td>
+		                <td>		                  
+		                	<c:forEach var="cont" items="${cli.getContatos()}">
+		                		${cont.getFixo()} - ${cont.getCelular()}
+		                	</c:forEach>		                  
+		                </td>
 		            </tr>
 		        </c:forEach>
 		    	</table>	    	
@@ -85,6 +90,7 @@
     </body>    
     <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="js/jquery.mask.min.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/sistema.js"></script>
 </html>

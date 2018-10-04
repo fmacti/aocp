@@ -1,4 +1,5 @@
 $(function() {
+	$('.ddd').mask('(00)');
     $( ".calendario").datepicker({
     	        dateFormat: 'dd/mm/yy',
     			dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'],

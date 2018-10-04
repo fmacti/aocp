@@ -10,6 +10,7 @@ import java.util.List;
 
 import br.com.fernando.config.Conexao;
 import br.com.fernando.model.Cliente;
+import br.com.fernando.model.ClienteView;
 
 public class ClienteDao {
 	
@@ -65,17 +66,21 @@ public class ClienteDao {
 		return 0;
 	}
 	
-	public List<Cliente> getLista() {
+	public List<ClienteView> getLista() {
 		PreparedStatement pstm = null;
 		ResultSet rs = null;
 		
         try {
-            List<Cliente> clientes = new ArrayList<Cliente>();
-            pstm = this.conn.prepareStatement("select * from cliente");
+            List<ClienteView> clientes = new ArrayList<ClienteView>();
+            String sql = "select c.*, (select co.fixo from contato co where co.cliente_id = c.id limit 1) AS fixo, " + 
+       			 "(select co.celular from contato co where co.cliente_id = c.id limit 1) AS celular " + 
+       			 "from cliente c";
+            pstm = this.conn.prepareStatement(sql);
             rs = pstm.executeQuery();
 
             while (rs.next()) {
-                Cliente cli = new Cliente(rs.getInt("id"), rs.getString("nome"), rs.getString("cpf_cnpj"), rs.getDate("data_nasc"));           
+            	ClienteView cli = new ClienteView(rs.getInt("id"), rs.getString("nome"), rs.getString("cpf_cnpj"), rs.getDate("data_nasc")); 
+            	cli.addContatos(rs.getString("fixo"), rs.getString("celular"));
             	clientes.add(cli);
             }            
             return clientes;
@@ -85,15 +90,12 @@ public class ClienteDao {
         }finally{
 			 
 			 try{
-				 /*if(rs != null){		 
+				 if(rs != null){		 
 					 rs.close();
 				 }
 				 if(pstm != null){		 
 					 pstm.close();
-				 }				 			 
-				 if(conn != null){
-					 conn.close();
-				 }		 */
+				 }
 			 }
 			 catch(Exception e){		 
 				 e.printStackTrace();
@@ -101,19 +103,25 @@ public class ClienteDao {
 		 }
     }
 	
-	public List<Cliente> getListaFone(String txt) {
+	public List<ClienteView> getListaFone(String txt) {
 		PreparedStatement pstm = null;
 		ResultSet rs = null;
 		
         try {
-            List<Cliente> clientes = new ArrayList<Cliente>();
-            pstm = this.conn.prepareStatement("select * from cliente WHERE nome LIKE ?");
-            pstm.setString(1, '%' + txt);
+            List<ClienteView> clientes = new ArrayList<ClienteView>();
+            String sql = "select c.*, (select co.fixo from contato co where co.cliente_id = c.id limit 1) AS fixo, " + 
+            			 "(select co.celular from contato co where co.cliente_id = c.id limit 1) AS celular " + 
+            			 "from cliente c where c.id in (select cliente_id from contato where fixo like ? OR celular like ?)";
+            
+            pstm = this.conn.prepareStatement(sql);
+            pstm.setString(1, '%' + txt + '%');
+            pstm.setString(2, '%' + txt + '%');
             rs = pstm.executeQuery();
 
             while (rs.next()) {
-                Cliente cli = new Cliente(rs.getInt("id"), rs.getString("nome"), rs.getString("cpf_cnpj"), rs.getDate("data_nasc"));           
-            	clientes.add(cli);
+                ClienteView cli = new ClienteView(rs.getInt("id"), rs.getString("nome"), rs.getString("cpf_cnpj"), rs.getDate("data_nasc"));
+                cli.addContatos(rs.getString("fixo"), rs.getString("celular"));
+                clientes.add(cli);
             }            
             return clientes;
             
@@ -122,15 +130,12 @@ public class ClienteDao {
         }finally{
 			 
 			 try{
-				 /*if(rs != null){		 
+				 if(rs != null){		 
 					 rs.close();
 				 }
 				 if(pstm != null){		 
 					 pstm.close();
-				 }				 			 
-				 if(conn != null){
-					 conn.close();
-				 }		 */
+				 }
 			 }
 			 catch(Exception e){		 
 				 e.printStackTrace();

@@ -10,7 +10,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import br.com.fernando.dao.ClienteDao;
+import br.com.fernando.dao.ContatoDao;
+import br.com.fernando.dao.EnderecoDao;
 import br.com.fernando.model.Cliente;
+import br.com.fernando.model.Contato;
+import br.com.fernando.model.Endereco;
 
 @WebServlet("/sistema")
 public class ClienteServlet extends HttpServlet {
@@ -48,9 +52,24 @@ public class ClienteServlet extends HttpServlet {
 	private static void salvaContatoEndereco(HttpServletRequest request, int clienteId) {
 		String[] fixos = request.getParameterValues("Fixo");
     	String[] celulares = request.getParameterValues("Celular");
-    	String[] logradouro = request.getParameterValues("Logradouro");
-    	String[] cidade = request.getParameterValues("Cidade");
-    	String[] uf = request.getParameterValues("Uf");
-    	//terminar criar as entidade de contato e endereço para tratar essas valores.
+    	String[] logradouros = request.getParameterValues("Logradouro");
+    	String[] cidades = request.getParameterValues("Cidade");
+    	String[] ufs = request.getParameterValues("Uf");
+    	
+    	if(fixos != null) {
+    		ContatoDao cDao = new ContatoDao();
+        	for (int i = 0; i < fixos.length; i++) {
+    			Contato c = new Contato(fixos[i], celulares[i], clienteId);
+    			cDao.salvar(c);
+    		}
+    	}
+    	
+    	if(logradouros != null) {
+    		EnderecoDao eDao = new EnderecoDao();
+        	for (int i = 0; i < logradouros.length; i++) {
+    			Endereco e = new Endereco(logradouros[i], cidades[i], ufs[i], clienteId);
+    			eDao.salvar(e);
+    		}
+    	}
 	}
 }
