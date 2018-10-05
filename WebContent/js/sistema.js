@@ -10,6 +10,53 @@ $(function() {
     	        changeMonth: true,
     	        changeYear: true
     			});
+    
+    $('#cpfCnpj').blur(function () {	    	
+    	var valor = $(this).val();
+    	if (valor == '') {
+            return;
+        }
+        if (valor.length == 14 || valor.length == 18) {
+        	existeCadastro(valor, "cpfCnpj");
+        }else{
+        	$("#cpfCnpj").attr("data-toggle", "popover");
+            $("#cpfCnpj").attr("data-placement", "bottom");
+            $("#cpfCnpj").attr("data-content", "A quantidade de numeros está errada.");
+            $("#cpfCnpj").popover('show');
+            $("#cpfCnpj").val("");
+        }	                
+        
+    });
+    $('#data').change(function () {	
+    	
+        if ($(this).val() == '') {	        	
+            return;
+        }
+        if(!validaDate($(this).val())){
+        	$("#data").val("");
+        	return;
+        }
+        var msg = "Só pode se cadastrar empresas com mais de 3 anos!"
+        var maior = 3;
+        var cpfCnpj = $('#cpfCnpj').val();
+        if(cpfCnpj.length <= 14) { 
+        	maior = 18;
+        	msg = "Só pode se cadastrar pessoas com mais de 18 anos!"
+        }
+        var dtNasc = $(this).val().split('/');
+        var vlIdade = idade(new Date(dtNasc[2], dtNasc[1], dtNasc[0]))
+        if(vlIdade < maior){
+        		$("#data").attr("data-toggle", "popover");
+                $("#data").attr("data-placement", "bottom");
+                $("#data").attr("data-content", msg);
+                $("#data").popover('show');
+                $("#data").val("");
+        }
+        else{
+    		$("#data").attr("data-toggle", "popover");
+            $("#data").popover('hide');
+    	}	        
+    });
 });
 
 function soNumeros(d) {

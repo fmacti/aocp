@@ -28,7 +28,6 @@ public class ClienteDao {
 		 PreparedStatement pstm = null;
 		 
 		 try {		 		 
-			 //Cria um PreparedStatment, classe usada para executar a query
 			 pstm = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			 
 			 pstm.setString(1, cliente.getNome());
@@ -50,14 +49,9 @@ public class ClienteDao {
 		 finally{
 			 
 			 try{
-				 /*if(pstm != null){		 
+				 if(pstm != null){		 
 					 pstm.close();
 				 }
-			 
-				 if(conn != null){
-					 conn.close();
-				 }*/
-		 
 			 }
 			 catch(Exception e){		 
 				 e.printStackTrace();
